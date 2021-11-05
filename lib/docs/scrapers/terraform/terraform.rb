@@ -1,18 +1,15 @@
 module Docs
   class Terraform < UrlScraper
-    self.name = 'Terraform'
     self.type = 'terraform'
-    self.base_url = 'https://www.terraform.io/docs/'
     self.release = '1.0.9'
-    self.root_path = 'index.html'
+    self.abstract = true
+
     self.links = {
       home: 'https://www.terraform.io/',
       code: 'https://github.com/hashicorp/terraform'
     }
 
     html_filters.push 'terraform/entries', 'terraform/clean_html'
-
-    options[:skip_patterns] = [/enterprise/, /enterprise-legacy/]
 
     options[:attribution] = <<-HTML
       &copy; 2021 HashiCorp</br>
