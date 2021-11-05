@@ -15,7 +15,7 @@ module Docs
     options[:skip_patterns] = [/enterprise/, /enterprise-legacy/]
 
     options[:attribution] = <<-HTML
-      &copy; 2018 HashiCorp</br>
+      &copy; 2021 HashiCorp</br>
       Licensed under the MPL 2.0 License.
     HTML
 
