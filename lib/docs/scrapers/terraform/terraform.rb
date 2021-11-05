@@ -9,7 +9,7 @@ module Docs
       code: 'https://github.com/hashicorp/terraform'
     }
 
-    html_filters.push 'terraform/entries', 'terraform/clean_html'
+    html_filters.push 'terraform/clean_html'
 
     options[:attribution] = <<-HTML
       &copy; 2021 HashiCorp</br>
