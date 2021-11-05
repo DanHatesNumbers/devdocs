@@ -2,8 +2,8 @@ module Docs
   class Terraform < UrlScraper
     self.name = 'Terraform'
     self.type = 'terraform'
-    self.release = '0.11.7'
     self.base_url = 'https://www.terraform.io/docs/'
+    self.release = '1.0.9'
     self.root_path = 'index.html'
     self.links = {
       home: 'https://www.terraform.io/',
