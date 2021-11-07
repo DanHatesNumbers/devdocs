@@ -43,6 +43,8 @@ module Docs
           else
             'Language'
           end
+        elsif slug_components[:category].eql?('internals')
+          'Internals'
         else
           'Unknown'
         end
