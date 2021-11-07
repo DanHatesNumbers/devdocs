@@ -1,5 +1,5 @@
 /* PrismJS 1.25.0
-https://prismjs.com/download.html#themes=prism&languages=markup+css+clike+javascript+bash+c+cpp+cmake+coffeescript+crystal+d+dart+diff+django+elixir+erlang+go+groovy+java+json+julia+kotlin+latex+lua+markup-templating+matlab+nginx+nim+ocaml+perl+php+python+r+jsx+ruby+rust+scss+shell-session+sql+typescript+yaml */
+https://prismjs.com/download.html#themes=prism&languages=markup+css+clike+javascript+bash+c+cpp+cmake+coffeescript+crystal+d+dart+diff+django+elixir+erlang+go+groovy+hcl+java+json+julia+kotlin+latex+lua+markup-templating+matlab+nginx+nim+ocaml+perl+php+python+r+jsx+ruby+rust+scss+shell-session+sql+typescript+yaml */
 /// <reference lib="WebWorker"/>
 
 var _self = (typeof window !== 'undefined')
@@ -21,7 +21,7 @@ var _self = (typeof window !== 'undefined')
 var Prism = (function (_self) {
 
 	// Private helper vars
-	var lang = /\blang(?:uage)?-([\w-]+)\b/i;
+	var lang = /(?:^|\s)lang(?:uage)?-([\w-]+)(?=\s|$)/i;
 	var uniqueId = 0;
 
 	// The grammar object for plaintext
@@ -186,13 +186,31 @@ var Prism = (function (_self) {
 			 * @returns {string}
 			 */
 			getLanguage: function (element) {
-				while (element && !lang.test(element.className)) {
+				while (element) {
+					var m = lang.exec(element.className);
+					if (m) {
+						return m[1].toLowerCase();
+					}
 					element = element.parentElement;
 				}
-				if (element) {
-					return (element.className.match(lang) || [, 'none'])[1].toLowerCase();
-				}
 				return 'none';
+			},
+
+			/**
+			 * Sets the Prism `language-xxxx` class of the given element.
+			 *
+			 * @param {Element} element
+			 * @param {string} language
+			 * @returns {void}
+			 */
+			setLanguage: function (element, language) {
+				// remove all `language-xxxx` classes
+				// (this might leave behind a leading space)
+				element.className = element.className.replace(RegExp(lang, 'gi'), '');
+
+				// add the new `language-xxxx` class
+				// (using `classList` will automatically clean up spaces for us)
+				element.classList.add('language-' + language);
 			},
 
 			/**
@@ -549,12 +567,12 @@ var Prism = (function (_self) {
 			var grammar = _.languages[language];
 
 			// Set language on the element, if not present
-			element.className = element.className.replace(lang, '').replace(/\s+/g, ' ') + ' language-' + language;
+			_.util.setLanguage(element, language);
 
 			// Set language on the parent, for styling
 			var parent = element.parentElement;
 			if (parent && parent.nodeName.toLowerCase() === 'pre') {
-				parent.className = parent.className.replace(lang, '').replace(/\s+/g, ' ') + ' language-' + language;
+				_.util.setLanguage(parent, language);
 			}
 
 			var code = element.textContent;
@@ -3018,6 +3036,70 @@ Prism.hooks.add('wrap', function (env) {
 		}
 	}
 });
+
+Prism.languages.hcl = {
+	'comment': /(?:\/\/|#).*|\/\*[\s\S]*?(?:\*\/|$)/,
+	'heredoc': {
+		pattern: /<<-?(\w+\b)[\s\S]*?^[ \t]*\1/m,
+		greedy: true,
+		alias: 'string'
+	},
+	'keyword': [
+		{
+			pattern: /(?:data|resource)\s+(?:"(?:\\[\s\S]|[^\\"])*")(?=\s+"[\w-]+"\s+\{)/i,
+			inside: {
+				'type': {
+					pattern: /(resource|data|\s+)(?:"(?:\\[\s\S]|[^\\"])*")/i,
+					lookbehind: true,
+					alias: 'variable'
+				}
+			}
+		},
+		{
+			pattern: /(?:backend|module|output|provider|provisioner|variable)\s+(?:[\w-]+|"(?:\\[\s\S]|[^\\"])*")\s+(?=\{)/i,
+			inside: {
+				'type': {
+					pattern: /(backend|module|output|provider|provisioner|variable)\s+(?:[\w-]+|"(?:\\[\s\S]|[^\\"])*")\s+/i,
+					lookbehind: true,
+					alias: 'variable'
+				}
+			}
+		},
+		/[\w-]+(?=\s+\{)/
+	],
+	'property': [
+		/[-\w\.]+(?=\s*=(?!=))/,
+		/"(?:\\[\s\S]|[^\\"])+"(?=\s*[:=])/,
+	],
+	'string': {
+		pattern: /"(?:[^\\$"]|\\[\s\S]|\$(?:(?=")|\$+(?!\$)|[^"${])|\$\{(?:[^{}"]|"(?:[^\\"]|\\[\s\S])*")*\})*"/,
+		greedy: true,
+		inside: {
+			'interpolation': {
+				pattern: /(^|[^$])\$\{(?:[^{}"]|"(?:[^\\"]|\\[\s\S])*")*\}/,
+				lookbehind: true,
+				inside: {
+					'type': {
+						pattern: /(\b(?:count|data|local|module|path|self|terraform|var)\b\.)[\w\*]+/i,
+						lookbehind: true,
+						alias: 'variable'
+					},
+					'keyword': /\b(?:count|data|local|module|path|self|terraform|var)\b/i,
+					'function': /\w+(?=\()/,
+					'string': {
+						pattern: /"(?:\\[\s\S]|[^\\"])*"/,
+						greedy: true,
+					},
+					'number': /\b0x[\da-f]+\b|\b\d+(?:\.\d*)?(?:e[+-]?\d+)?/i,
+					'punctuation': /[!\$#%&'()*+,.\/;<=>@\[\\\]^`{|}~?:]/,
+				}
+			},
+		}
+	},
+	'number': /\b0x[\da-f]+\b|\b\d+(?:\.\d*)?(?:e[+-]?\d+)?/i,
+	'boolean': /\b(?:false|true)\b/i,
+	'punctuation': /[=\[\]{}]/,
+};
 
 (function (Prism) {
 
