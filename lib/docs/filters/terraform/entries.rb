@@ -45,6 +45,16 @@ module Docs
           end
         elsif slug_components[:category].eql?('internals')
           'Internals'
+        elsif %w[plugin extend].include?(slug_components[:category])
+          if %w[how-terraform-works hashicorp-provider-design-principles which-sdk].include?(slug_components[:subcategory])
+            'Extending Terraform'
+          elsif slug_components[:category].eql?('plugin')
+            'Extending Terraform - SDKv2'
+          else
+            'Extending Terraform - Plugin Framework'
+          end
+        elsif slug_components[:category].eql?('registry')
+          'Registry'
         else
           'Unknown'
         end
