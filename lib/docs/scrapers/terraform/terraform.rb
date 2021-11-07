@@ -14,7 +14,7 @@ module Docs
 
     html_filters.push 'terraform/entries', 'terraform/clean_html'
 
-    options[:skip_patterns] = [/enterprise/, /cloud/]
+    options[:skip_patterns] = [/enterprise/, /cloud/, /configuration-0-11/, /configuration\/(?:expressions|resources)/, /glossary/]
 
     options[:attribution] = <<-HTML
       &copy; 2021 HashiCorp</br>
