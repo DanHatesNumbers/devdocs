@@ -18,6 +18,7 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.12.2)
+    commonmarker (0.23.2)
     concurrent-ruby (1.1.9)
     daemons (1.4.0)
     erubi (1.9.0)
@@ -139,6 +140,7 @@ DEPENDENCIES
   browser
   chunky_png
   coffee-script
+  commonmarker (~> 0.16)
   erubi
   html-pipeline
   image_optim

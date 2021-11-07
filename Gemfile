@@ -39,6 +39,7 @@ group :development do
 end
 
 group :docs do
+  gem 'commonmarker', '~> 0.16', require: false
   gem 'progress_bar', require: false
   gem 'unix_utils', require: false
   gem 'tty-pager', require: false
